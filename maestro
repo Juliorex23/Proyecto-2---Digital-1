@@ -1,0 +1,547 @@
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+#define I2C_ADDR    0x27;
+#define LCD_COLUMNS 16;
+#define LCD_LINES   2;
+
+  int BPMvalue = 0;
+  int SVvalue = 0;
+  int PSvalue = 0;
+  int PDvalue = 0;
+  const long interval = 2000;  // interval at which to blink (milliseconds)
+  unsigned long previousMillis = 0;
+  
+  typedef enum estados {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9} estados;
+  estados estadoActual = s0;
+  estados estadoFuturo = s0;
+
+
+void setup() {
+  lcd.begin(16, 2);
+  lcd.init();
+  lcd.backlight();
+  pinMode(13, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(9, OUTPUT);
+}
+
+void loop() { //Aquí comienzan las transiciones de estado
+
+  BPMvalue = analogRead(A0); //Aquí se lee el input del sensor de BPM
+  BPMvalue = map(BPMvalue, 0, 1023, 80, 220);
+
+  SVvalue = analogRead(A1); //Aquí se lee el input del sensor de Stroke Volume
+  SVvalue = map(SVvalue, 0, 1023, 40, 100);
+
+  PSvalue = analogRead(A2); //Aquí se lee el input del sensor de Presión sistólica
+  PSvalue = map(PSvalue, 0, 1023, 90, 130);
+
+  PDvalue = analogRead(A3);//Aquí se lee el input del sensor de Presión diastólica
+  PDvalue = map(PDvalue, 0, 1023, 60, 90);
+
+  int CO = (BPMvalue)*(SVvalue);
+  int Pp = (PSvalue) - (PDvalue);
+  int Pm = (PDvalue) + ((Pp)/3);
+
+  switch (estadoActual) {
+    case s0:
+      if(BPMvalue >= 220){
+          estadoFuturo = s2;
+      }else{
+        estadoFuturo = s1;
+      }
+      break;
+      
+    case s1:
+      if(SVvalue >= 60){
+        estadoFuturo = s3;
+      } else {
+        estadoFuturo = s4;
+      } break;
+
+    case s2:
+      estadoFuturo = s0;
+      break;      
+
+    case s3:
+      if (PSvalue >= 100){
+        estadoFuturo = s5;
+      }  
+      else {
+        estadoFuturo = s6;
+      }break;
+
+      case s4:
+        estadoFuturo = s0;
+        break;
+      case s5:
+      if (PDvalue >= 80){
+        estadoFuturo = s7;
+      } else{
+        estadoFuturo = s8;
+      }break;
+
+      case s6:
+       estadoFuturo = s0;
+       break;
+
+      case s7:
+        estadoFuturo = s0;
+
+      case s8:
+        estadoFuturo = s0;
+        break;
+        }
+
+  switch (estadoActual){
+    case s0:  //TERMINADO
+      digitalWrite(13, LOW);
+      digitalWrite(12, LOW);
+      digitalWrite(11, LOW);
+      digitalWrite(10, LOW);
+
+      //buzzer apagado  //lcd apagado
+      break;
+
+    case s1:  //TERMINADO
+      digitalWrite(13, LOW); //leds
+      digitalWrite(12, LOW);
+      digitalWrite(11, LOW);
+      digitalWrite(10, LOW);
+      tone(9, 523, 100); // Do  //Victory sound
+      delay(100);
+      tone(9, 587, 100); // Re
+      delay(100);
+      tone(9, 659, 100); // Mi
+      delay(100);
+      tone(9, 698, 100); // Fa
+      delay(100);
+      tone(9, 784, 100); // Sol
+      delay(100);
+      tone(9, 880, 100); // La
+      delay(100);
+      tone(9, 988, 100); // Si
+      delay(1000);
+      lcd.setCursor(1,0);
+      lcd.print("Su BPM es bueno:");
+      lcd.setCursor(1,1);
+      lcd.print(BPMvalue);
+      delay(3000);
+      lcd.clear();
+      //buzzer pos feedback  //lcd pos feedback
+      break;
+
+    case s2:  //TERMINADO
+      digitalWrite(13, HIGH); //leds
+      digitalWrite(12, LOW);
+      digitalWrite(11, LOW);
+      digitalWrite(10, LOW);
+      tone(9, 988, 100); // Si  //game over sound
+      delay(100);
+      tone(9, 880, 100); // La
+      delay(100);
+      tone(9, 784, 100); // Sol
+      delay(100);
+      tone(9, 698, 100); // Fa
+      delay(100);
+      tone(9, 659, 100); // Mi
+      delay(100);
+      tone(9, 587, 100); // Re
+      delay(100);
+      tone(9, 523, 100); // Do
+      lcd.setCursor(1,0);
+      lcd.print("Su BPM es alto:");
+      lcd.setCursor(1,1);
+      lcd.print(BPMvalue);
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Posibles");
+      lcd.setCursor(1,1);
+      lcd.print("patologias:");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Anemia,");
+      delay(1500);
+      lcd.setCursor(1,1);
+      lcd.print("Hipertension,");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Enfermedad");
+      lcd.setCursor(1,1);
+      lcd.print("Coronaria");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Buscar atencion");
+      lcd.setCursor(1,1);
+      lcd.print("medica");
+      delay(1500);
+      lcd.clear();
+
+      
+
+      //buzzer neg feedback  //lcd neg feedback
+      break;
+
+    case s3:  //TERMINADO
+      digitalWrite(13, LOW);
+      digitalWrite(12, LOW);
+      digitalWrite(11, LOW);
+      digitalWrite(10, LOW);
+      tone(9, 523, 100); // Do   //Victory sound
+      delay(100);
+      tone(9, 587, 100); // Re
+      delay(100);
+      tone(9, 659, 100); // Mi
+      delay(100);
+      tone(9, 698, 100); // Fa
+      delay(100);
+      tone(9, 784, 100); // Sol
+      delay(100);
+      tone(9, 880, 100); // La
+      delay(100);
+      tone(9, 988, 100); // Si
+      delay(1000);
+      lcd.setCursor(1,0);
+      lcd.print("Su Stroke Vol.");
+      lcd.setCursor(1,1);
+      lcd.print("es bueno:");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(SVvalue);
+      delay(1500);
+      lcd.clear();
+      
+      //buzzer pos feedback  //lcd pos feedback
+      break;
+
+    case s4:  //TERMINADO
+      digitalWrite(13, LOW);
+      digitalWrite(12, HIGH);
+      digitalWrite(11, LOW);
+      digitalWrite(10, LOW);
+      tone(9, 988, 100); // Si  //game over sound
+      delay(100);
+      tone(9, 880, 100); // La
+      delay(100);
+      tone(9, 784, 100); // Sol
+      delay(100);
+      tone(9, 698, 100); // Fa
+      delay(100);
+      tone(9, 659, 100); // Mi
+      delay(100);
+      tone(9, 587, 100); // Re
+      delay(100);
+      tone(9, 523, 100); // Do
+      lcd.setCursor(1,0);
+      lcd.print("Su Stroke Vol.");
+      lcd.setCursor(1,1);
+      lcd.print("es bajo:");
+      delay(2500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(SVvalue);
+      lcd.setCursor(1,1);
+      lcd.print("mL/min");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Posibles");
+      lcd.setCursor(1,1);
+      lcd.print("patologias:");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Insuficiencia");
+      lcd.setCursor(1,1);
+      lcd.print("Cardiaca");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Cardiomiopatia");
+      lcd.setCursor(1,1);
+      lcd.print("Arritmia");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Se recomienda");
+      lcd.setCursor(1,1);
+      lcd.print("buscar atencion");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("y tratamiento");
+      lcd.setCursor(1,1);
+      lcd.print("medico");
+      delay(2000);
+      lcd.clear();
+      //buzzer neg feedback  //lcd neg feedback
+      break;
+
+    case s5:  //TERMINADO
+      digitalWrite(13, LOW);
+      digitalWrite(12, LOW);
+      digitalWrite(11, LOW);
+      digitalWrite(10, LOW);
+      tone(9, 523, 100); // Do   //Victory sound
+      delay(100);
+      tone(9, 587, 100); // Re
+      delay(100);
+      tone(9, 659, 100); // Mi
+      delay(100);
+      tone(9, 698, 100); // Fa
+      delay(100);
+      tone(9, 784, 100); // Sol
+      delay(100);
+      tone(9, 880, 100); // La
+      delay(100);
+      tone(9, 988, 100); // Si
+      delay(1000);
+      lcd.setCursor(0,0);
+      lcd.print("Su Presion Sist-");
+      lcd.setCursor(0,1);
+      lcd.print("olica esta bien");
+      delay(2500);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Ps = ");
+      lcd.setCursor(0,1);
+      lcd.print(PSvalue);
+      delay(2000);
+      lcd.clear();
+
+      //buzzer pos feedback  //lcd pos feedback
+      break;
+
+    case s6:  //TERMINADO
+      digitalWrite(13, LOW);
+      digitalWrite(12, LOW);
+      digitalWrite(11, HIGH);
+      digitalWrite(10, LOW);
+      tone(9, 988, 100); // Si  //game over sound
+      delay(100);
+      tone(9, 880, 100); // La
+      delay(100);
+      tone(9, 784, 100); // Sol
+      delay(100);
+      tone(9, 698, 100); // Fa
+      delay(100);
+      tone(9, 659, 100); // Mi
+      delay(100);
+      tone(9, 587, 100); // Re
+      delay(100);
+      tone(9, 523, 100); // Do
+      delay(1000);
+      lcd.setCursor(0,0);
+      lcd.print("Su Presion Sis-");
+      lcd.setCursor(0,1);
+      lcd.print("tolica es baja");
+      delay(2500);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print(PSvalue);
+      delay(1500);
+      lcd.setCursor(0,0);
+      lcd.print("Posibles");
+      lcd.setCursor(0,1);
+      lcd.print("Patologias:");
+      delay(3000);
+      lcd.setCursor(0,0);
+      lcd.print("Hipotiroidismo,");
+      lcd.setCursor(0,1);
+      lcd.print("Hipotension,");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Insuficiencia");
+      lcd.setCursor(0,1);
+      lcd.print("Cardiaca");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Buscar atencion");
+      lcd.setCursor(1,1);
+      lcd.print("medica");
+      delay(1500);
+      lcd.clear();
+
+      //buzzer neg feedback  //lcd neg feedback
+      break;
+
+    case s7:  //TERMINADO
+      digitalWrite(13, LOW);
+      digitalWrite(12, LOW);
+      digitalWrite(11, LOW);
+      digitalWrite(10, LOW);
+
+      tone(9, 523, 100); // Do   //Victory sound
+      delay(100);
+      tone(9, 587, 100); // Re
+      delay(100);
+      tone(9, 659, 100); // Mi
+      delay(100);
+      tone(9, 698, 100); // Fa
+      delay(100);
+      tone(9, 784, 100); // Sol
+      delay(100);
+      tone(9, 880, 100); // La
+      delay(100);
+      tone(9, 988, 100); // Si
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Su Presion Dias-");
+      lcd.setCursor(0,1);
+      lcd.print("tolica esta bien:");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Pd =");
+      lcd.setCursor(1,1);
+      lcd.print(PDvalue);
+      lcd.clear();
+      delay(2000);
+
+      digitalWrite(7, HIGH);
+      digitalWrite(6, HIGH);
+      digitalWrite(5, LOW);
+      delay(1500);
+      tone(9, 523, 100); // Do   //Victory sound
+      delay(100);
+      tone(9, 587, 100); // Re
+      delay(100);
+      tone(9, 659, 100); // Mi
+      delay(100);
+      tone(9, 698, 100); // Fa
+      delay(100);
+      tone(9, 784, 100); // Sol
+      delay(100);
+      tone(9, 880, 100); // La
+      delay(100);
+      tone(9, 988, 100); // Si
+      delay(2000);
+      //rgb CO
+      lcd.setCursor(1,0);
+      lcd.print("Su cardiac");
+      lcd.setCursor(1,1);
+      lcd.print("output es de:");
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(CO);
+      lcd.setCursor(1,1);
+      lcd.print("mL/min");
+      delay(3000);
+      lcd.clear();
+      delay(1000);
+
+      //rgp Pp
+      digitalWrite(7, LOW);
+      digitalWrite(6, HIGH);
+      digitalWrite(5, HIGH);
+
+      lcd.setCursor(1,0);
+      lcd.print("Su presion de");
+      lcd.setCursor(1,1);
+      lcd.print("pulso es de:");
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(Pp);
+      lcd.setCursor(1,1);
+      lcd.print("mmHg");
+      delay(3000);
+      lcd.clear();
+
+      //rgb Pm
+      digitalWrite(7, HIGH);
+      digitalWrite(6, LOW);
+      digitalWrite(5, HIGH);
+
+      lcd.setCursor(1,0);
+      lcd.print("Su presion");
+      lcd.setCursor(1,1);
+      lcd.print("media es de:");
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(Pm);
+      lcd.setCursor(1,1);
+      lcd.print("mmHg");
+      delay(3000);
+      lcd.clear();
+      digitalWrite(7, LOW);
+      digitalWrite(6, LOW);
+      digitalWrite(5, LOW);
+      break;
+
+    case s8:
+      digitalWrite(13, LOW);
+      digitalWrite(12, LOW);
+      digitalWrite(11, LOW);
+      digitalWrite(10, HIGH);
+      tone(9, 988, 100); // Si  //game over sound
+      delay(100);
+      tone(9, 880, 100); // La
+      delay(100);
+      tone(9, 784, 100); // Sol
+      delay(100);
+      tone(9, 698, 100); // Fa
+      delay(100);
+      tone(9, 659, 100); // Mi
+      delay(100);
+      tone(9, 587, 100); // Re
+      delay(100);
+      tone(9, 523, 100); // Do
+      delay(1000);
+      lcd.setCursor(1,0);
+      lcd.print("Su Presion Dias-");
+      lcd.setCursor(1,1);
+      lcd.print("tolica es baja");
+      delay(2500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(PDvalue);
+      delay(1500);
+      lcd.setCursor(1,1);
+      lcd.print("Posibles");
+      lcd.setCursor(1,0);
+      lcd.print("Patologias:");
+      delay(3000);
+      lcd.setCursor(1,1);
+      lcd.print("Hipotiroidismo,");
+      lcd.setCursor(0,1);
+      lcd.print("Hipotension,");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Insuficiencia");
+      lcd.setCursor(1,1);
+      lcd.print("Cardiaca");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Buscar atencion");
+      lcd.setCursor(1,1);
+      lcd.print("medica");
+      delay(1500);
+      lcd.clear();
+
+      //buzzer neg feedback  //lcd neg feedback
+      break;
+  }
+  unsigned long currentMillis = millis();
+if (currentMillis - previousMillis >=
+interval) {
+estadoActual = estadoFuturo;
+previousMillis = currentMillis;
+}
+}
