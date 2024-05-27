@@ -32,17 +32,6 @@ void setup() {
 
 void loop() { //Aquí comienzan las transiciones de estado
 
-  BPMvalue = analogRead(A0); //Aquí se lee el input del sensor de BPM
-  BPMvalue = map(BPMvalue, 0, 1023, 80, 220);
-
-  SVvalue = analogRead(A1); //Aquí se lee el input del sensor de Stroke Volume
-  SVvalue = map(SVvalue, 0, 1023, 40, 100);
-
-  PSvalue = analogRead(A2); //Aquí se lee el input del sensor de Presión sistólica
-  PSvalue = map(PSvalue, 0, 1023, 90, 130);
-
-  PDvalue = analogRead(A3);//Aquí se lee el input del sensor de Presión diastólica
-  PDvalue = map(PDvalue, 0, 1023, 60, 90);
 
   int CO = (BPMvalue)*(SVvalue);
   int Pp = (PSvalue) - (PDvalue);
@@ -50,6 +39,20 @@ void loop() { //Aquí comienzan las transiciones de estado
 
   switch (estadoActual) {
     case s0:
+      //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Leyendo pulso: ");
+      delay(5000); //delay de 5000 ms
+      BPMvalue = analogRead(A0); //Aquí se lee el input del sensor de BPM
+        BPMvalue = map(BPMvalue, 0, 1023, 80, 260);
+      lcd.clear();
+      lcd.setCursor (0, 0);
+      lcd.print("Pulso Registrado");
+      lcd.setCursor (0, 1);
+      lcd.print(BPMvalue);
+      delay(5000);
+      lcd.clear;
       if(BPMvalue >= 220){
           estadoFuturo = s2;
       }else{
@@ -58,6 +61,22 @@ void loop() { //Aquí comienzan las transiciones de estado
       break;
       
     case s1:
+      //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Leyendo Stroke: ");
+      lcd.setCursor (0 ,1);
+      lcd.print("Volume: ");
+      delay(5000); //delay de 5000 ms
+      SVvalue = analogRead(A1); //Aquí se lee el input del sensor de Stroke Volume
+      SVvalue = map(SVvalue, 0, 1023, 40, 100);
+      lcd.clear();
+      lcd.setCursor (0, 0);
+      lcd.print("SV Registrado");
+      lcd.setCursor (0, 1);
+      lcd.print(SVvalue);
+      delay(5000);
+      lcd.clear;
       if(SVvalue >= 60){
         estadoFuturo = s3;
       } else {
@@ -69,6 +88,22 @@ void loop() { //Aquí comienzan las transiciones de estado
       break;      
 
     case s3:
+       //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Leyendo Presion: ");
+      lcd.setCursor (0 ,1);
+      lcd.print("Sistolica: ");
+      delay(5000); //delay de 5000 ms
+      PSvalue = analogRead(A2); //Aquí se lee el input del sensor de Presión sistólica
+      PSvalue = map(PSvalue, 0, 1023, 90, 130);
+      lcd.clear();
+      lcd.setCursor (0, 0);
+      lcd.print("PS Registrado");
+      lcd.setCursor (0, 1);
+      lcd.print(PSvalue);
+      delay(5000);
+      lcd.clear;
       if (PSvalue >= 100){
         estadoFuturo = s5;
       }  
@@ -80,6 +115,22 @@ void loop() { //Aquí comienzan las transiciones de estado
         estadoFuturo = s0;
         break;
       case s5:
+       //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Leyendo Presion: ");
+      lcd.setCursor (0 ,1);
+      lcd.print("Diastolica: ");
+      delay(5000); //delay de 5000 ms
+      PDvalue = analogRead(A3);//Aquí se lee el input del sensor de Presión diastólica
+      PDvalue = map(PDvalue, 0, 1023, 60, 90);
+      lcd.clear();
+      lcd.setCursor (0, 0);
+      lcd.print("PD Registrado");
+      lcd.setCursor (0, 1);
+      lcd.print(PSvalue);
+      delay(5000);
+      lcd.clear;
       if (PDvalue >= 80){
         estadoFuturo = s7;
       } else{
