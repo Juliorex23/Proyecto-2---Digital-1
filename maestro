@@ -198,52 +198,6 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, HIGH);
       digitalWrite(10, LOW);
-      tone(9, 988, 100); // Si  //game over sound
-      delay(100);
-      tone(9, 880, 100); // La
-      delay(100);
-      tone(9, 784, 100); // Sol
-      delay(100);
-      tone(9, 698, 100); // Fa
-      delay(100);
-      tone(9, 659, 100); // Mi
-      delay(100);
-      tone(9, 587, 100); // Re
-      delay(100);
-      tone(9, 523, 100); // Do
-      delay(1000);
-      lcd.setCursor(0,0);
-      lcd.print("Su Presion Sis-");
-      lcd.setCursor(0,1);
-      lcd.print("tolica es baja");
-      delay(2500);
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print(PSvalue);
-      delay(1500);
-      lcd.setCursor(0,0);
-      lcd.print("Posibles");
-      lcd.setCursor(0,1);
-      lcd.print("Patologias:");
-      delay(3000);
-      lcd.setCursor(0,0);
-      lcd.print("Hipotiroidismo,");
-      lcd.setCursor(0,1);
-      lcd.print("Hipotension,");
-      delay(2000);
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("Insuficiencia");
-      lcd.setCursor(0,1);
-      lcd.print("Cardiaca");
-      delay(2000);
-      lcd.clear();
-      lcd.setCursor(1,0);
-      lcd.print("Buscar atencion");
-      lcd.setCursor(1,1);
-      lcd.print("medica");
-      delay(1500);
-      lcd.clear();
 
       //buzzer neg feedback  //lcd neg feedback
       break;
