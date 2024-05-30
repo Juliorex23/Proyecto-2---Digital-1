@@ -2,9 +2,12 @@
 
 
 Servo servo;
+Servo servo2;
 
-// Definición de la secuencia de movimientos
+// Definición de la secuencia de movimientos para la bandera roja
 int secuencia[] = {45, 135, 45, 135, 45, 135, 45, 135 };
+// Definición de la secuencia de movimientos para la bandera verde
+int secuencia2[] = {0, 90, 0, 90, 0, 90, 0, 90};
 
 
   const long interval = 2000;  // interval at which to blink (milliseconds)
@@ -16,12 +19,17 @@ int secuencia[] = {45, 135, 45, 135, 45, 135, 45, 135 };
 
 
 void setup() {
-  servo.attach(2);
-  pinMode(13, OUTPUT);
-  pinMode(12, OUTPUT);
-  pinMode(11, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(9, OUTPUT);
+//Se definen los pines que manejan la señal de los servo;
+  servo.attach(2); 
+  servo.attach(3);
+//Pines de entradas desde el arduino maestro
+  pinMode(13, INPUT);
+  pinMode(12, INPUT);
+  pinMode(11, INPUT);
+  pinMode(10, INPUT);
+  pinMode(9, INPUT);
+  pinMode(8, INPUT);
+
 }
 
 void loop() { //Aquí comienzan las transiciones de estado
@@ -68,6 +76,14 @@ void loop() { //Aquí comienzan las transiciones de estado
         for (int i = 0; i <= 7; i++) {
         int angulo = secuencia[i];
         servo.write(angulo);
+        delay(1000); // Espera 1 segundo antes de pasar al siguiente movimiento
+        }
+        }
+        else if (digitalRead(9)==HIGH)
+        {
+        for (int i = 0; i <= 7; i++) {
+        int angulo = secuencia2[i];
+        servo2.write(angulo);
         delay(1000); // Espera 1 segundo antes de pasar al siguiente movimiento
         }
         }
