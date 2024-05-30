@@ -1,11 +1,9 @@
-#include <LiquidCrystal_I2C.h>
-#include <Wire.h>
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+#include <Adafruit_LiquidCrystal.h>
 
-#define I2C_ADDR    0x27;
-#define LCD_COLUMNS 16;
-#define LCD_LINES   2;
+
+Adafruit_LiquidCrystal lcd(0);
+
 
   int BPMvalue = 0;
   int SVvalue = 0;
@@ -21,8 +19,6 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void setup() {
   lcd.begin(16, 2);
-  lcd.init();
-  lcd.backlight();
   pinMode(13, OUTPUT);
   pinMode(12, OUTPUT);
   pinMode(11, OUTPUT);
@@ -43,16 +39,16 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Leyendo pulso: ");
-      delay(5000); //delay de 5000 ms
+      delay(3000); //delay de 3000 ms
       BPMvalue = analogRead(A0); //Aquí se lee el input del sensor de BPM
-        BPMvalue = map(BPMvalue, 0, 1023, 80, 260);
+      BPMvalue = map(BPMvalue, 0, 1023, 80, 260);
       lcd.clear();
       lcd.setCursor (0, 0);
       lcd.print("Pulso Registrado");
       lcd.setCursor (0, 1);
       lcd.print(BPMvalue);
-      delay(5000);
-      lcd.clear;
+      delay(3000);
+      lcd.clear();
       if(BPMvalue >= 220){
           estadoFuturo = s2;
       }else{
@@ -67,7 +63,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print("Leyendo Stroke: ");
       lcd.setCursor (0 ,1);
       lcd.print("Volume: ");
-      delay(5000); //delay de 5000 ms
+      delay(3000); //delay de 3000 ms
       SVvalue = analogRead(A1); //Aquí se lee el input del sensor de Stroke Volume
       SVvalue = map(SVvalue, 0, 1023, 40, 100);
       lcd.clear();
@@ -76,7 +72,6 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.setCursor (0, 1);
       lcd.print(SVvalue);
       delay(5000);
-      lcd.clear;
       if(SVvalue >= 60){
         estadoFuturo = s3;
       } else {
@@ -85,6 +80,7 @@ void loop() { //Aquí comienzan las transiciones de estado
 
     case s2:
       estadoFuturo = s0;
+   
       break;      
 
     case s3:
@@ -94,7 +90,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print("Leyendo Presion: ");
       lcd.setCursor (0 ,1);
       lcd.print("Sistolica: ");
-      delay(5000); //delay de 5000 ms
+      delay(3000); //delay de 3000 ms
       PSvalue = analogRead(A2); //Aquí se lee el input del sensor de Presión sistólica
       PSvalue = map(PSvalue, 0, 1023, 90, 130);
       lcd.clear();
@@ -103,7 +99,6 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.setCursor (0, 1);
       lcd.print(PSvalue);
       delay(5000);
-      lcd.clear;
       if (PSvalue >= 100){
         estadoFuturo = s5;
       }  
@@ -121,7 +116,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print("Leyendo Presion: ");
       lcd.setCursor (0 ,1);
       lcd.print("Diastolica: ");
-      delay(5000); //delay de 5000 ms
+      delay(3000); //delay de 3000 ms
       PDvalue = analogRead(A3);//Aquí se lee el input del sensor de Presión diastólica
       PDvalue = map(PDvalue, 0, 1023, 60, 90);
       lcd.clear();
@@ -130,7 +125,6 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.setCursor (0, 1);
       lcd.print(PSvalue);
       delay(5000);
-      lcd.clear;
       if (PDvalue >= 80){
         estadoFuturo = s7;
       } else{
@@ -155,10 +149,6 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, LOW);
       digitalWrite(10, LOW);
-      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
-      digitalWrite(9,HIGH);
-      delay (3000);
-      ditialWrite(9,LOW);
       break;
 
     case s1:
@@ -169,7 +159,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
       digitalWrite(9,HIGH);
       delay (3000);
-      ditialWrite(9,LOW);
+      digitalWrite(9,LOW);
       //buzzer pos feedback  //lcd pos feedback
       break;
 
@@ -178,7 +168,41 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, LOW);
       digitalWrite(10, LOW);
-      break;
+      delay(3000);
+      digitalWrite(13, LOW);
+    
+      lcd.setCursor(1,0);
+      lcd.print("Su BPM es alto:");
+      lcd.setCursor(1,1);
+      lcd.print(BPMvalue);
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Posibles");
+      lcd.setCursor(1,1);
+      lcd.print("patologias:");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Anemia,");
+      delay(1500);
+      lcd.setCursor(1,1);
+      lcd.print("Hipertension,");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Enfermedad");
+      lcd.setCursor(1,1);
+      lcd.print("Coronaria");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Buscar atencion");
+      lcd.setCursor(1,1);
+      lcd.print("medica");
+      delay(1500);
+      lcd.clear();
+    break;
 
     case s3:
       digitalWrite(13, LOW);
@@ -188,7 +212,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
       digitalWrite(9,HIGH);
       delay (3000);
-      ditialWrite(9,LOW);
+      digitalWrite(9,LOW);
       break;
 
     case s4:
@@ -206,7 +230,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
       digitalWrite(9,HIGH);
       delay (3000);
-      ditialWrite(9,LOW);
+      digitalWrite(9,LOW);
       break;
 
     case s6:
@@ -226,7 +250,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
       digitalWrite(9,HIGH);
       delay (3000);
-      ditialWrite(9,LOW);
+      digitalWrite(9,LOW);
       break;
 
     case s8:
