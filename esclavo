@@ -7,7 +7,7 @@ Servo servo2;
 // Definición de la secuencia de movimientos para la bandera roja
 int secuencia[] = {45, 135, 45, 135, 45, 135, 45, 135, 0};
 // Definición de la secuencia de movimientos para la bandera verde
-int secuencia2[] = {0, 90, 0, 90, 0, 90, 0, 90};
+int secuencia2[] = {0, 90, 0};
 
 
   const long interval = 2000;  // interval at which to blink (milliseconds)
@@ -79,10 +79,10 @@ servo2.write(0);
         }
         else if (digitalRead(13)==HIGH)
         {
-        for (int u = 0; u <= 7; u++) {
+        for (int u = 0; u <= 2; u++) {
         int angulo = secuencia2[u];
         servo2.write(angulo);
-        delay(1000); // Espera 1 segundo antes de pasar al siguiente movimiento
+        delay(500); // Espera medio segundo antes de pasar al siguiente movimiento
         }
         }
   unsigned long currentMillis = millis();
