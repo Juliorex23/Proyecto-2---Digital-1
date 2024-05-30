@@ -57,25 +57,13 @@ void loop() { //Aquí comienzan las transiciones de estado
       break;
       
     case s1:
-      //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
       lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Leyendo Stroke: ");
-      lcd.setCursor (0 ,1);
-      lcd.print("Volume: ");
-      delay(3000); //delay de 3000 ms
-      SVvalue = analogRead(A1); //Aquí se lee el input del sensor de Stroke Volume
-      SVvalue = map(SVvalue, 0, 1023, 40, 100);
+      lcd.setCursor(1,0);
+      lcd.print("Su BPM es bueno:");
+      lcd.setCursor(1,1);
+      lcd.print(BPMvalue);
+      delay(3000);
       lcd.clear();
-      lcd.setCursor (0, 0);
-      lcd.print("SV Registrado");
-      lcd.setCursor (0, 1);
-      lcd.print(SVvalue);
-      delay(5000);
-      if(SVvalue >= 60){
-        estadoFuturo = s3;
-      } else {
-        estadoFuturo = s4;
       } break;
 
     case s2:
@@ -161,6 +149,26 @@ void loop() { //Aquí comienzan las transiciones de estado
       delay (3000);
       digitalWrite(9,LOW);
       //buzzer pos feedback  //lcd pos feedback
+    //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Leyendo Stroke: ");
+      lcd.setCursor (0 ,1);
+      lcd.print("Volume: ");
+      delay(3000); //delay de 3000 ms
+      SVvalue = analogRead(A1); //Aquí se lee el input del sensor de Stroke Volume
+      SVvalue = map(SVvalue, 0, 1023, 40, 100);
+      lcd.clear();
+      lcd.setCursor (0, 0);
+      lcd.print("SV Registrado");
+      lcd.setCursor (0, 1);
+      lcd.print(SVvalue);
+      delay(5000);
+      if(SVvalue >= 60){
+        estadoFuturo = s3;
+      } else {
+        estadoFuturo = s4;
+      }
       break;
 
     case s2:
