@@ -5,7 +5,7 @@ Servo servo;
 Servo servo2;
 
 // Definición de la secuencia de movimientos para la bandera roja
-int secuencia[] = {45, 135, 45, 135, 45, 135, 45, 135 };
+int secuencia[] = {45, 135, 45, 135, 45, 135, 45, 135, 0};
 // Definición de la secuencia de movimientos para la bandera verde
 int secuencia2[] = {0, 90, 0, 90, 0, 90, 0, 90};
 
@@ -13,15 +13,12 @@ int secuencia2[] = {0, 90, 0, 90, 0, 90, 0, 90};
   const long interval = 2000;  // interval at which to blink (milliseconds)
   unsigned long previousMillis = 0;
   
-  typedef enum estados {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9} estados;
-  estados estadoActual = s0;
-  estados estadoFuturo = s0;
-
+ 
 
 void setup() {
 //Se definen los pines que manejan la señal de los servo;
   servo.attach(2); 
-  servo.attach(3);
+  servo2.attach(3);
 //Pines de entradas desde el arduino maestro
   pinMode(13, INPUT);
   pinMode(12, INPUT);
@@ -33,25 +30,26 @@ void setup() {
 }
 
 void loop() { //Aquí comienzan las transiciones de estado
-
-        if (digitalRead(13) == HIGH) 
+servo.write(0);
+servo2.write(0);
+        if (digitalRead(9) == HIGH) 
         {
-        digitalWrite(8,HIGH);
-        delay(2000);
-        digitalWrite(8,LOW);
-        for (int i = 0; i <= 7; i++) {
-        int angulo = secuencia[i];
-        servo.write(angulo);
-        delay(1000); // Espera 1 segundo antes de pasar al siguiente movimiento
-        }
-        }
-
-        else if (digitalRead(12)==HIGH)
-        {
-        digitalWrite (7,HIGH);
+        digitalWrite(7,HIGH);
         delay(2000);
         digitalWrite(7,LOW);
-        for (int i = 0; i <= 7; i++) {
+        for (int i = 0; i <= 8; i++) {
+        int angulo = secuencia[i];
+        servo.write(angulo);
+   		delay(500); // Espera medio segundo antes de pasar al siguiente movimiento
+        }
+        }
+
+        else if (digitalRead(10)==HIGH)
+        {
+        digitalWrite (6,HIGH);
+        delay(2000);
+        digitalWrite(6,LOW);
+        for (int i = 0; i <= 8; i++) {
         int angulo = secuencia[i];
         servo.write(angulo);
         delay(1000); // Espera 1 segundo antes de pasar al siguiente movimiento
@@ -59,30 +57,30 @@ void loop() { //Aquí comienzan las transiciones de estado
         }
         else if (digitalRead(11)==HIGH)
         {
-        digitalWrite(6,HIGH);
-        delay(2000);
-        digitalWrite(6,LOW);
-        for (int i = 0; i <= 7; i++) {
-        int angulo = secuencia[i];
-        servo.write(angulo);
-        delay(1000); // Espera 1 segundo antes de pasar al siguiente movimiento
-        }
-        }
-        else if (digitalRead(10)==HIGH)
-        {
         digitalWrite(5,HIGH);
         delay(2000);
         digitalWrite(5,LOW);
-        for (int i = 0; i <= 7; i++) {
+        for (int i = 0; i <= 8; i++) {
         int angulo = secuencia[i];
         servo.write(angulo);
         delay(1000); // Espera 1 segundo antes de pasar al siguiente movimiento
         }
         }
-        else if (digitalRead(9)==HIGH)
+        else if (digitalRead(12)==HIGH)
         {
-        for (int i = 0; i <= 7; i++) {
-        int angulo = secuencia2[i];
+        digitalWrite(4,HIGH);
+        delay(2000);
+        digitalWrite(4,LOW);
+        for (int i = 0; i <= 8; i++) {
+        int angulo = secuencia[i];
+        servo.write(angulo);
+        delay(1000); // Espera 1 segundo antes de pasar al siguiente movimiento
+        }
+        }
+        else if (digitalRead(13)==HIGH)
+        {
+        for (int u = 0; u <= 7; u++) {
+        int angulo = secuencia2[u];
         servo2.write(angulo);
         delay(1000); // Espera 1 segundo antes de pasar al siguiente movimiento
         }
@@ -90,7 +88,6 @@ void loop() { //Aquí comienzan las transiciones de estado
   unsigned long currentMillis = millis();
 if (currentMillis - previousMillis >=
 interval) {
-estadoActual = estadoFuturo;
 previousMillis = currentMillis;
 }
 }
