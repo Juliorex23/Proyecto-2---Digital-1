@@ -155,6 +155,10 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, LOW);
       digitalWrite(10, LOW);
+      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
+      digitalWrite(9,HIGH);
+      delay (3000);
+      ditialWrite(9,LOW);
       break;
 
     case s1:
@@ -162,6 +166,10 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, LOW);
       digitalWrite(10, LOW);
+      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
+      digitalWrite(9,HIGH);
+      delay (3000);
+      ditialWrite(9,LOW);
       //buzzer pos feedback  //lcd pos feedback
       break;
 
@@ -177,6 +185,10 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, LOW);
       digitalWrite(10, LOW);
+      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
+      digitalWrite(9,HIGH);
+      delay (3000);
+      ditialWrite(9,LOW);
       break;
 
     case s4:
@@ -191,6 +203,10 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, LOW);
       digitalWrite(10, LOW);
+      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
+      digitalWrite(9,HIGH);
+      delay (3000);
+      ditialWrite(9,LOW);
       break;
 
     case s6:
@@ -207,6 +223,10 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, LOW);
       digitalWrite(10, LOW);
+      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
+      digitalWrite(9,HIGH);
+      delay (3000);
+      ditialWrite(9,LOW);
       break;
 
     case s8:
