@@ -131,7 +131,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(9,HIGH);
       delay (3000);
       digitalWrite(9,LOW);
-        estadoFuturo = s0;
+      estadoFuturo = s0;
       break;
     
     
@@ -255,6 +255,8 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, HIGH);
       digitalWrite(11, LOW);
       digitalWrite(10, LOW);
+      delay(3000);
+      digitalWrite(12,LOW);
     
     //Posibles diagnósticos 
       lcd.clear();
@@ -332,6 +334,9 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, HIGH);
       digitalWrite(10, LOW);
+      delay(3000);
+      digitalWrite(11,LOW);
+    
       
     //Posibles patologías 
       lcd.clear();
@@ -370,7 +375,49 @@ void loop() { //Aquí comienzan las transiciones de estado
       break;
    
     case s7:
-    //No hay una salida para este caso
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Su cardiac");
+      lcd.setCursor(1,1);
+      lcd.print("output es de:");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(CO);
+      lcd.setCursor(1,1);
+      lcd.print("mL/min");
+      delay(3000);
+      lcd.clear();
+      delay(1000);
+    
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Su presion de");
+      lcd.setCursor(1,1);
+      lcd.print("pulso es de:");
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(Pp);
+      lcd.setCursor(1,1);
+      lcd.print("mmHg");
+      delay(3000);
+      lcd.clear();
+      
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Su presion");
+      lcd.setCursor(1,1);
+      lcd.print("media es de:");
+      delay(3000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(Pm);
+      lcd.setCursor(1,1);
+      lcd.print("mmHg");
+      delay(3000);
+      lcd.clear();    
+    
     break;
     
     case s8:
@@ -378,6 +425,9 @@ void loop() { //Aquí comienzan las transiciones de estado
       digitalWrite(12, LOW);
       digitalWrite(11, LOW);
       digitalWrite(10, HIGH);
+      delay(3000);
+      digitalWrite(10,LOW);
+    
     
       lcd.clear();
    	  lcd.setCursor(1,0);
