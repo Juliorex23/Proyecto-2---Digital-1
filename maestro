@@ -38,7 +38,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
       lcd.clear();
       lcd.setCursor(0, 0);
-      lcd.print("Leyendo pulso: ");
+      lcd.print("Leyendo pulso:");
       delay(3000); //delay de 3000 ms
       BPMvalue = analogRead(A0); //Aquí se lee el input del sensor de BPM
       BPMvalue = map(BPMvalue, 0, 1023, 80, 260);
@@ -51,7 +51,8 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.clear();
       if(BPMvalue >= 220){
           estadoFuturo = s2;
-      }else{
+      }
+      else{
         estadoFuturo = s1;
       }
       break;
@@ -64,29 +65,73 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print(BPMvalue);
       delay(3000);
       lcd.clear();
+    //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Leyendo Stroke ");
+      lcd.setCursor (0 ,1);
+      lcd.print("Volume: ");
+      delay(2500); //delay de 2500 ms
+      lcd.clear();
+
+      if(SVvalue >= 50){
+        estadoFuturo = s3}
+      else {
+        estadoFuturo = s4}
       } break;
 
     case s2:
+      lcd.setCursor(1,0);
+      lcd.print("Su BPM es alto:");
+      lcd.setCursor(1,1);
+      lcd.print(BPMvalue);
+      delay(2500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Posibles");
+      lcd.setCursor(1,1);
+      lcd.print("patologias:");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Anemia,");
+      delay(1500);
+      lcd.setCursor(1,1);
+      lcd.print("Hipertension,");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Enfermedad");
+      lcd.setCursor(1,1);
+      lcd.print("Coronaria");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Buscar atencion");
+      lcd.setCursor(1,1);
+      lcd.print("medica");
+      delay(1500);
+      lcd.clear();
       estadoFuturo = s0;
    
       break;      
 
     case s3:
-       //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
+      SVvalue = analogRead(A1); //Aquí se lee el input del sensor de Stroke Volume
+      SVvalue = map(PSvalue, 0, 1023, 90, 130);
+      lcd.clear();
+      lcd.setCursor (0, 0);
+      lcd.print("SV Registrado:");
+      lcd.setCursor (0, 1);
+      lcd.print(SVvalue);
+      delay(3000);
+    //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Leyendo Presion: ");
       lcd.setCursor (0 ,1);
-      lcd.print("Sistolica: ");
+      lcd.print("Sistólica: ");
       delay(3000); //delay de 3000 ms
-      PSvalue = analogRead(A2); //Aquí se lee el input del sensor de Presión sistólica
-      PSvalue = map(PSvalue, 0, 1023, 90, 130);
-      lcd.clear();
-      lcd.setCursor (0, 0);
-      lcd.print("PS Registrado");
-      lcd.setCursor (0, 1);
-      lcd.print(PSvalue);
-      delay(5000);
       if (PSvalue >= 100){
         estadoFuturo = s5;
       }  
@@ -94,39 +139,156 @@ void loop() { //Aquí comienzan las transiciones de estado
         estadoFuturo = s6;
       }break;
 
-      case s4:
+
+    case s4:
+      lcd.setCursor(1,0);
+      lcd.print("Su Stroke Vol.");
+      lcd.setCursor(1,1);
+      lcd.print("es bajo:");
+      delay(2500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print(SVvalue);
+      lcd.setCursor(1,1);
+      lcd.print("mL/min");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Posibles");
+      lcd.setCursor(1,1);
+      lcd.print("patologias:");
+      delay(1500);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Insuficiencia");
+      lcd.setCursor(1,1);
+      lcd.print("Cardiaca");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Cardiomiopatia");
+      lcd.setCursor(1,1);
+      lcd.print("Arritmia");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("Se recomienda");
+      lcd.setCursor(1,1);
+      lcd.print("buscar atencion");
+      delay(2000);
+      lcd.clear();
+      lcd.setCursor(1,0);
+      lcd.print("y tratamiento");
+      lcd.setCursor(1,1);
+      lcd.print("medico");
+      delay(2000);
+      lcd.clear();
+      estadoFuturo = s0;
+      break;
+
+
+     case s5:
+        PSvalue= analogRead(A2); //Aquí se lee el input del sensor de Stroke Volume
+        PSvalue = map(PSvalue, 0, 1023, 90, 130);
+        lcd.clear();
+        lcd.setCursor (0, 0);
+        lcd.print("PS Registrado:");
+        lcd.setCursor (0, 1);
+        lcd.print(PSvalue);
+        delay(3000);
+   //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Leyendo Presion: ");
+        lcd.setCursor (0 ,1);
+        lcd.print("Diastolica: ");
+        delay(3000); //delay de 3000 ms
+        if (PDvalue >= 80){
+          estadoFuturo = s7;
+        } else{
+          estadoFuturo = s8;
+        }break;
+
+     case s6:
+        lcd.setCursor(0,0);
+        lcd.print("Su Presion Sis-");
+        lcd.setCursor(0,1);
+        lcd.print("tolica es baja");
+        delay(2500);
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print(PSvalue);
+        delay(1500);
+        lcd.setCursor(0,0);
+        lcd.print("Posibles");
+        lcd.setCursor(0,1);
+        lcd.print("Patologias:");
+        delay(3000);
+        lcd.setCursor(0,0);
+        lcd.print("Hipotiroidismo,");
+        lcd.setCursor(0,1);
+        lcd.print("Hipotension,");
+        delay(2000);
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Insuficiencia");
+        lcd.setCursor(0,1);
+        lcd.print("Cardiaca");
+        delay(2000);
+        lcd.clear();
+        lcd.setCursor(1,0);
+        lcd.print("Buscar atencion");
+        lcd.setCursor(1,1);
+        lcd.print("medica");
+        delay(1500);
+        lcd.clear();
         estadoFuturo = s0;
         break;
-      case s5:
-       //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Leyendo Presion: ");
-      lcd.setCursor (0 ,1);
-      lcd.print("Diastolica: ");
-      delay(3000); //delay de 3000 ms
-      PDvalue = analogRead(A3);//Aquí se lee el input del sensor de Presión diastólica
-      PDvalue = map(PDvalue, 0, 1023, 60, 90);
-      lcd.clear();
-      lcd.setCursor (0, 0);
-      lcd.print("PD Registrado");
-      lcd.setCursor (0, 1);
-      lcd.print(PSvalue);
-      delay(5000);
-      if (PDvalue >= 80){
-        estadoFuturo = s7;
-      } else{
-        estadoFuturo = s8;
-      }break;
-
-      case s6:
-       estadoFuturo = s0;
-       break;
 
       case s7:
+        PDvalue = analogRead(A3);//Aquí se lee el input del sensor de Presión diastólica
+        PDvalue = map(PDvalue, 0, 1023, 60, 90);
+        lcd.clear();
+        lcd.setCursor (0, 0);
+        lcd.print("PD Registrado");
+        lcd.setCursor (0, 1);
+        lcd.print(PDvalue);
+        delay(3000);
         estadoFuturo = s0;
 
       case s8:
+        lcd.setCursor(1,0);
+        lcd.print("Su Presion Dias-");
+        lcd.setCursor(1,1);
+        lcd.print("tolica es baja");
+        delay(2500);
+        lcd.clear();
+        lcd.setCursor(1,0);
+        lcd.print(PDvalue);
+        delay(1500);
+        lcd.setCursor(1,1);
+        lcd.print("Posibles");
+        lcd.setCursor(1,0);
+        lcd.print("Patologias:");
+        delay(3000);
+        lcd.setCursor(1,1);
+        lcd.print("Hipotiroidismo,");
+        lcd.setCursor(0,1);
+        lcd.print("Hipotension,");
+        delay(2000);
+        lcd.clear();
+        lcd.setCursor(1,0);
+        lcd.print("Insuficiencia");
+        lcd.setCursor(1,1);
+        lcd.print("Cardiaca");
+        delay(2000);
+        lcd.clear();
+        lcd.setCursor(1,0);
+        lcd.print("Buscar atencion");
+        lcd.setCursor(1,1);
+        lcd.print("medica");
+        delay(1500);
+        lcd.clear();
         estadoFuturo = s0;
         break;
         }
