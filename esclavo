@@ -91,6 +91,18 @@ servo2.write(0);
         servo2.write(angulo);
         delay(500); // Espera medio segundo antes de pasar al siguiente movimiento
         }
+        digitalWrite(A1, HIGH);
+        digitalWrite(A2, HIGH);
+        delay(1000);
+
+        digitalWrite(A0, HIGH);
+        digitalWrite(A2, HIGH);
+        delay(1000);
+
+        digitalWrite(A0, HIGH);
+        digitalWrite(A1, HIGH);
+        delay(1000);
+
         }
   unsigned long currentMillis = millis();
 if (currentMillis - previousMillis >=
