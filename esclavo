@@ -94,17 +94,22 @@ servo2.write(0);
         digitalWrite(A1, HIGH);
         digitalWrite(A2, HIGH);
         digitalWrite(A0, LOW);
-        delay(1000);
+        delay(500);
 
         digitalWrite(A0, HIGH);
         digitalWrite(A2, HIGH);
         digitalWrite(A1, LOW);
-        delay(1000);
+        delay(500);
 
         digitalWrite(A0, HIGH);
         digitalWrite(A1, HIGH);
         digitalWrite(A2, LOW);
-        delay(1000);
+        delay(500);
+        
+        digitalWrite(A0, LOW);
+        digitalWrite(A1, LOW);
+        digitalWrite(A2, LOW);
+        delay(500);
 
         }
   unsigned long currentMillis = millis();
