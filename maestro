@@ -1,5 +1,13 @@
-#include <Adafruit_LiquidCrystal.h>
-Adafruit_LiquidCrystal lcd(0);
+#include <LiquidCrystal_I2C.h>
+
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+#define I2C_ADDR    0x27;
+#define LCD_COLUMNS 16;
+#define LCD_LINES   2;
+
+
   int BPMvalue = 0;
   int SVvalue = 0;
   int PSvalue = 0;
@@ -10,14 +18,20 @@ Adafruit_LiquidCrystal lcd(0);
   typedef enum estados {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9} estados;
   estados estadoActual = s0;
   estados estadoFuturo = s0;
+
 void setup() {
   lcd.begin(16, 2);
+  lcd.init();
+  lcd.backlight();
   pinMode(13, OUTPUT);
   pinMode(12, OUTPUT);
   pinMode(11, OUTPUT);
   pinMode(10, OUTPUT);
   pinMode(9, OUTPUT);
+
+  Serial.begin(9600);
 }
+
 void loop() { //Aquí comienzan las transiciones de estado
   int CO = (BPMvalue)*(SVvalue);
   int Pp = (PSvalue) - (PDvalue);
@@ -71,15 +85,8 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print(SVvalue);
       delay(3000);
       lcd.clear();
-      digitalWrite(13, LOW);
-      digitalWrite(12, LOW);
-      digitalWrite(11, LOW);
-      digitalWrite(10, LOW);
-      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
-      digitalWrite(9,HIGH);
-      delay (3000);
-      digitalWrite(9,LOW);
-       
+      //Comunicacion Serial
+      Serial.write ('9');
        break;
     
       case s4:
@@ -97,14 +104,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print(PSvalue);
       delay(3000);
       lcd.clear();
-      digitalWrite(13, LOW);
-      digitalWrite(12, LOW);
-      digitalWrite(11, LOW);
-      digitalWrite(10, LOW);
-      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
-      digitalWrite(9,HIGH);
-      delay (3000);
-      digitalWrite(9,LOW);
+      Serial.write ('9');
       break;
     
     
@@ -123,14 +123,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print(PDvalue);
       delay(3000);
       lcd.clear();
-      digitalWrite(13, LOW);
-      digitalWrite(12, LOW);
-      digitalWrite(11, LOW);
-      digitalWrite(10, LOW);
-      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
-      digitalWrite(9,HIGH);
-      delay (3000);
-      digitalWrite(9,LOW);
+      Serial.write ('9');
       estadoFuturo = s0;
       break;
     
@@ -145,20 +138,10 @@ void loop() { //Aquí comienzan las transiciones de estado
   
   switch (estadoActual){
     case s0:
-      digitalWrite(13, LOW);
-      digitalWrite(12, LOW);
-      digitalWrite(11, LOW);
-      digitalWrite(10, LOW);
+      //No hay comunicacion para este caso
       break;
     case s1:
-      digitalWrite(13, LOW);
-      digitalWrite(12, LOW);
-      digitalWrite(11, LOW);
-      digitalWrite(10, LOW);
-      //Salida para activar el motor Servo que dará una bandera verde para indicar bienestar en la medición
-      digitalWrite(9,HIGH);
-      delay (3000);
-      digitalWrite(9,LOW);
+      Serial.write ('9');
       //buzzer pos feedback  //lcd pos feedback
     //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
       lcd.clear();
@@ -184,12 +167,7 @@ void loop() { //Aquí comienzan las transiciones de estado
 
     
     case s2:
-      digitalWrite(13, HIGH); 
-      digitalWrite(12, LOW);
-      digitalWrite(11, LOW);
-      digitalWrite(10, LOW);
-      delay(3000);
-      digitalWrite(13, LOW);
+      Serial.write ('3');
     
       lcd.setCursor(1,0);
       lcd.print("Su BPM es alto:");
@@ -251,13 +229,7 @@ void loop() { //Aquí comienzan las transiciones de estado
     
       break;
     case s4:
-      digitalWrite(13, LOW);
-      digitalWrite(12, HIGH);
-      digitalWrite(11, LOW);
-      digitalWrite(10, LOW);
-      delay(3000);
-      digitalWrite(12,LOW);
-    
+      Serial.write ('2');
     //Posibles diagnósticos 
       lcd.clear();
       lcd.setCursor(1,0);
@@ -330,13 +302,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       break;
     
     case s6:
-      digitalWrite(13, LOW);
-      digitalWrite(12, LOW);
-      digitalWrite(11, HIGH);
-      digitalWrite(10, LOW);
-      delay(3000);
-      digitalWrite(11,LOW);
-    
+      Serial.write ('1');
       
     //Posibles patologías 
       lcd.clear();
@@ -421,12 +387,7 @@ void loop() { //Aquí comienzan las transiciones de estado
     break;
     
     case s8:
-      digitalWrite(13, LOW);
-      digitalWrite(12, LOW);
-      digitalWrite(11, LOW);
-      digitalWrite(10, HIGH);
-      delay(3000);
-      digitalWrite(10,LOW);
+      Serial.write ('0');
     
     
       lcd.clear();
