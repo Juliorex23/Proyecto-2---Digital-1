@@ -1,6 +1,12 @@
+//Código para el Proyecto número 2 de Electrónica Digital 1 - Universidad del Valle de Guatemala
+//Julio Roberto Pérez Díaz 221023, José Andrés García Salas Hurtarte (22985)
+//Código del Arduino Esclavo
+//Monitor de Signos Vitales del corazón con conexión serial entre dos arduinos
+
+//Librería para controlar el motor Servo
 #include <Servo.h>
 
-
+//Definición del nombre de los servos utilizados
 Servo servo;
 Servo servo2;
 
@@ -19,12 +25,8 @@ void setup() {
 //Se definen los pines que manejan la señal de los servo;
   servo.attach(2); 
   servo2.attach(3);
-//Pines de entradas desde el arduino maestro
-  pinMode(13, INPUT);
-  pinMode(12, INPUT);
-  pinMode(11, INPUT);
-  pinMode(10, INPUT);
-  pinMode(9, INPUT);
+
+//Pines de salidas del esclavo en base a la comunicación Serial
   pinMode (7, OUTPUT);
   pinMode (6, OUTPUT);
   pinMode (5, OUTPUT);
@@ -33,6 +35,7 @@ void setup() {
   pinMode (A1, OUTPUT);
   pinMode (A2, OUTPUT);
 
+//Definición de Serial para la comunicación entre arduinos
   Serial.begin(9600);
 
   
@@ -40,18 +43,23 @@ void setup() {
 
 void loop() { //Aquí comienzan las transiciones de estado
   while  (true) { //Lazo infinito
+//Definición de los servos en cero grados
 servo.write(0);
 servo2.write(0);
+//Lectura de Serial de entrada de comunicación con el arduino maestro para definir las posibles salidas. 
 
 if (Serial.available()) {
+//Asignación del valor de lectura a una nueva variable 
       char data_rcvd = Serial.read();
 		Serial.println(data_rcvd);
-
+//Definición de los estados en los que se obtuvo una medición no saludable 
         if (data_rcvd == '3') 
         {
+//Se enciende una LED para indicar alerta 
         digitalWrite(7,HIGH);
         delay(2000);
         digitalWrite(7,LOW);
+//Movimiento del motor Servo que controla la bandera roja 
         for (int i = 0; i <= 5; i++) {
         int angulo = secuencia[i];
         servo.write(angulo);
@@ -61,9 +69,11 @@ if (Serial.available()) {
 
         else if (data_rcvd == '2')
         {
+//Se enciende una LED para indicar alerta 
         digitalWrite (6,HIGH);
         delay(2000);
         digitalWrite(6,LOW);
+//Movimiento del motor Servo que controla la bandera roja 
         for (int i = 0; i <= 5; i++) {
         int angulo = secuencia[i];
         servo.write(angulo);
@@ -72,9 +82,11 @@ if (Serial.available()) {
         }
         else if (data_rcvd == '1')
         {
+//Se enciende una LED para indicar alerta 
         digitalWrite(5,HIGH);
         delay(2000);
         digitalWrite(5,LOW);
+//Movimiento del motor Servo que controla la bandera roja 
         for (int i = 0; i <= 5; i++) {
         int angulo = secuencia[i];
         servo.write(angulo);
@@ -83,9 +95,11 @@ if (Serial.available()) {
         }
         else if (data_rcvd == '0')
         {
+//Se enciende una LED para indicar alerta 
         digitalWrite(4,HIGH);
         delay(2000);
         digitalWrite(4,LOW);
+//Movimiento del motor Servo que controla la bandera roja 
         for (int i = 0; i <= 5; i++) {
         int angulo = secuencia[i];
         servo.write(angulo);
@@ -94,11 +108,13 @@ if (Serial.available()) {
         }
         else if (data_rcvd == '9')
         {
+//Movimiento del motor Servo que controla la bandera verde
         for (int u = 0; u <= 2; u++) {
         int angulo = secuencia2[u];
         servo2.write(angulo);
         delay(500); // Espera medio segundo antes de pasar al siguiente movimiento
         }
+//Código para encender la LED RGB
         digitalWrite(A1, HIGH);
         digitalWrite(A2, HIGH);
         digitalWrite(A0, LOW);
@@ -119,6 +135,7 @@ if (Serial.available()) {
         digitalWrite(A2, LOW);
         delay(500);
         }
+//Actualización de estado 
   unsigned long currentMillis = millis();
 if (currentMillis - previousMillis >=
 interval) {
