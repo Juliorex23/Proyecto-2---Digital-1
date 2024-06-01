@@ -1,24 +1,31 @@
+//Código para el Proyecto número 2 de Electrónica Digital 1 - Universidad del Valle de Guatemala
+//Julio Roberto Pérez Díaz 221023, José Andrés García Salas Hurtarte (22985)
+//Monitor de Signos Vitales del corazón con conexión serial entre dos arduinos
+
+//Librería para activar la LCD
 #include <LiquidCrystal_I2C.h>
 
-
+// Definición de la LCD
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 #define I2C_ADDR    0x27;
 #define LCD_COLUMNS 16;
 #define LCD_LINES   2;
 
-
+//Definición de variables enteras para las entradas del sistema 
   int BPMvalue = 0;
   int SVvalue = 0;
   int PSvalue = 0;
   int PDvalue = 0;
+
   const long interval = 2000;  // interval at which to blink (milliseconds)
   unsigned long previousMillis = 0;
-  
-  typedef enum estados {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9} estados;
+
+  //Definición de estados 
+  typedef enum estados {s0, s1, s2, s3, s4, s5, s6, s7, s8} estados;
   estados estadoActual = s0;
   estados estadoFuturo = s0;
-
+//Definición de los pines como salidas 
 void setup() {
   lcd.begin(16, 2);
   lcd.init();
@@ -28,16 +35,17 @@ void setup() {
   pinMode(11, OUTPUT);
   pinMode(10, OUTPUT);
   pinMode(9, OUTPUT);
-
+//Definición de serial para utilizar la comunicación entre arduinos 
   Serial.begin(9600);
 }
 
-void loop() { //Aquí comienzan las transiciones de estado
+void loop() { 
+//Definición de variables para realizar los cálculos finales en base a las entradas del sistema. 
   int CO = (BPMvalue)*(SVvalue);
   int Pp = (PSvalue) - (PDvalue);
   int Pm = (PDvalue) + ((Pp)/3);
   
-  
+ //Aquí comienzan las transiciones de estado 
   switch (estadoActual) {
     case s0:
       //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
@@ -45,8 +53,10 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.setCursor(0, 0);
       lcd.print("Leyendo pulso: ");
       delay(3000); //delay de 3000 ms
+//Se hace la lectura analoga y mapeo de la entrada en el potenciómetro para el pulso del corazón. 
       BPMvalue = analogRead(A0); //Aquí se lee el input del sensor de BPM
       BPMvalue = map(BPMvalue, 0, 1023, 80, 260);
+//Se muestra el pulso registrado para el usuario. 
       lcd.clear();
       lcd.setCursor (0, 0);
       lcd.print("Pulso Registrado");
@@ -54,13 +64,15 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print(BPMvalue);
       delay(3000);
       lcd.clear();
+//Se hace la definición del estado futuro dependiendo del valor, es decir si se tiene un valor en un rango normal 
+//pasa a un estado específico y si no, pasa a otro estado para mostrar distintas salidas y alertar al usuario. 
       if(BPMvalue >= 220){
           estadoFuturo = s2;
       }else{
         estadoFuturo = s1;
       }
       break;
-
+//Estado en que se indica que el BPM o pulso medido está dentro del rango considerado como normal 
     case s1:
       lcd.clear();
       lcd.setCursor(1,0);
@@ -70,11 +82,13 @@ void loop() { //Aquí comienzan las transiciones de estado
       delay(3000);
       lcd.clear();
        break;
-
+//Si el BPM no está dentro del rango normal se regresará al estado inicial para realizar la medición de nuevo
+//Indica que se está dentro de un rango malo y se recomendará ir al doctor
     case s2:
       estadoFuturo = s0;
-   
-      break;      
+      break;    
+
+//Se indica que se el Stroke Volume medido se encuentra dentro del rango correcto o normal 
     case s3:
       lcd.clear();
       lcd.setCursor(1,0);
@@ -85,15 +99,16 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print(SVvalue);
       delay(3000);
       lcd.clear();
-      //Comunicacion Serial
+  //Comunicacion Serial, siendo 9 una señal de bandera verde indicando que está bien junto a la LED RGB encendida. 
       Serial.write ('9');
        break;
-    
+  //Si el Stroke Volume no está dentro del rango normal se regresará al estado inicial para realizar la medición de nuevo
+//Indica que se está dentro de un rango malo y se recomendará ir al doctor
       case s4:
         estadoFuturo = s0;
         break;
     
-    
+  //Se indica que  la Presión Sistólica que se ha medido se encuentra dentro del rango correcto o normal 
       case s5:
       lcd.clear();
       lcd.setCursor(1,0);
@@ -107,12 +122,13 @@ void loop() { //Aquí comienzan las transiciones de estado
       Serial.write ('9');
       break;
     
-    
+  //Si la Presión Sistólica no está dentro del rango normal se regresará al estado inicial para realizar la medición de nuevo
+//Indica que se está dentro de un rango malo y se recomendará ir al doctor
       case s6:
        estadoFuturo = s0;
        break;
     
-    
+  //Se indica que  la Presión Diastólica que se ha medido se encuentra dentro del rango correcto o normal   
       case s7:
       lcd.clear();
       lcd.setCursor(1,0);
@@ -124,10 +140,12 @@ void loop() { //Aquí comienzan las transiciones de estado
       delay(3000);
       lcd.clear();
       Serial.write ('9');
+//Al ser la medición final regresa el estado 0 en donde inicia el ciclo una vez más. 
       estadoFuturo = s0;
       break;
     
-    
+    //Si la Presión Diastólica no está dentro del rango normal se regresará al estado inicial para realizar la medición de nuevo
+//Indica que se está dentro de un rango malo y se recomendará ir al doctor
       case s8:
         estadoFuturo = s0;
         break;
@@ -135,14 +153,16 @@ void loop() { //Aquí comienzan las transiciones de estado
  
   
   
-  
+  //Salidas 
+
   switch (estadoActual){
     case s0:
       //No hay comunicacion para este caso
       break;
     case s1:
+//Comunicación serial de un estado bueno o una medición en un rango normal 
       Serial.write ('9');
-      //buzzer pos feedback  //lcd pos feedback
+
     //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
       lcd.clear();
       lcd.setCursor(0, 0);
@@ -151,13 +171,15 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print("Volume: ");
       delay(3000); //delay de 3000 ms
       SVvalue = analogRead(A1); //Aquí se lee el input del sensor de Stroke Volume
-      SVvalue = map(SVvalue, 0, 1023, 40, 100);
+      SVvalue = map(SVvalue, 0, 1023, 40, 100); //Se mapea la entrada leída
       lcd.clear();
       lcd.setCursor (0, 0);
+//Se muestra el Stroke Volume registrado
       lcd.print("SV Registrado");
       lcd.setCursor (0, 1);
       lcd.print(SVvalue);
       delay(5000);
+//Definición de estados futuros en base si su Stroke Volume está dentro el rango normal o no 
       if(SVvalue >= 60){
         estadoFuturo = s3;
       } else {
@@ -167,8 +189,10 @@ void loop() { //Aquí comienzan las transiciones de estado
 
     
     case s2:
+//Comunicación Serial que indica que el BPM se encuentra en un rango alto 
       Serial.write ('3');
-    
+//Se imprime que el BPM es alto y se muestran diversas posibles patologías acompañado de una recomendación de visita médica 
+
       lcd.setCursor(1,0);
       lcd.print("Su BPM es alto:");
       lcd.setCursor(1,1);
@@ -204,7 +228,6 @@ void loop() { //Aquí comienzan las transiciones de estado
     
     
     case s3:
-
       //Se muestra el mensaje en la LCD para indicar qué variable se está midiendo
       lcd.clear();
       lcd.setCursor(0, 0);
@@ -213,13 +236,15 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print("Sistolica: ");
       delay(3000); //delay de 3000 ms
       PSvalue = analogRead(A2); //Aquí se lee el input del sensor de Presión sistólica
-      PSvalue = map(PSvalue, 0, 1023, 90, 130);
+      PSvalue = map(PSvalue, 0, 1023, 90, 130); //Mapeo de la lectura realizada 
       lcd.clear();
       lcd.setCursor (0, 0);
+//Se muestra el valor medido de Presión Sistólica
       lcd.print("PS Registrada");
       lcd.setCursor (0, 1);
       lcd.print(PSvalue);
       delay(5000);
+//Se realiza la selección del estado futuro en base al valor medido y si se encuentra en un rango normal o no. 
       if (PSvalue >= 100){
         estadoFuturo = s5;
       }  
@@ -228,9 +253,12 @@ void loop() { //Aquí comienzan las transiciones de estado
       }
     
       break;
+
+
     case s4:
+//Comunicación Serial en la que en este caso indica que el Stroke Volume se encuentra en un nivel bajo 
       Serial.write ('2');
-    //Posibles diagnósticos 
+    //Posibles diagnósticos para un Stroke Volume bajo y recomendación de visita el médico 
       lcd.clear();
       lcd.setCursor(1,0);
       lcd.print("Su Stroke Vol.");
@@ -287,13 +315,15 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.print("Diastolica: ");
       delay(3000); //delay de 3000 ms
       PDvalue = analogRead(A3);//Aquí se lee el input del sensor de Presión diastólica
-      PDvalue = map(PDvalue, 0, 1023, 60, 90);
+      PDvalue = map(PDvalue, 0, 1023, 60, 90); //Mapeo de la lectura realizada
       lcd.clear();
       lcd.setCursor (0, 0);
+//Se muestra la presión diastólica detectada
       lcd.print("PD Registrada");
       lcd.setCursor (0, 1);
       lcd.print(PSvalue);
       delay(5000);
+//Transición del estado futuro en base al valor de Presión Diastólica, este varía en base al rango sano o un rango que presenta riesgo
       if (PDvalue >= 80){
         estadoFuturo = s7;
       } else{
@@ -302,9 +332,10 @@ void loop() { //Aquí comienzan las transiciones de estado
       break;
     
     case s6:
+//Comunicación Serial que indica que la presión Sistólica es baja
       Serial.write ('1');
       
-    //Posibles patologías 
+    //Posibles patologías y recomendación de visita médica
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Su Presion Sis-");
@@ -341,6 +372,8 @@ void loop() { //Aquí comienzan las transiciones de estado
       break;
    
     case s7:
+//Resumen de datos de cardiac output, presión media y presión de pulso
+//esto se muestra sí y solo sí todas las mediciones están en rangos normales
       lcd.clear();
       lcd.setCursor(1,0);
       lcd.print("Su cardiac");
@@ -387,9 +420,10 @@ void loop() { //Aquí comienzan las transiciones de estado
     break;
     
     case s8:
+//Comunicación Serial en la que se indica que la presión diastólica es baja
       Serial.write ('0');
     
-    
+  //Posibles patologías y recomendación de visita médica  
       lcd.clear();
    	  lcd.setCursor(1,0);
       lcd.print("Su Presion Dias-");
@@ -425,6 +459,7 @@ void loop() { //Aquí comienzan las transiciones de estado
       lcd.clear();
       break;
   }
+//Actualización de estado 
   unsigned long currentMillis = millis();
 if (currentMillis - previousMillis >=
 interval) {
